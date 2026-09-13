@@ -17,6 +17,6 @@ export function ProjectCard({project,index,onHover,onOpen}:{project:Project;inde
    {index===2&&<div className="featured-liquid" style={{opacity:hover?1:0}}><LiquidImage src={project.image} active={hover&&visible} interactive={false}/></div>}
    {index===3&&<><div className="featured-rgb red" style={{backgroundImage:`url(${project.image})`}}/><div className="featured-rgb cyan" style={{backgroundImage:`url(${project.image})`}}/></>}
   </motion.div><div className="featured-card-shade"/><span className="featured-card-index">0{index+1} / SELECTED FRAME</span><span className="featured-view">VIEW <i>↗</i></span></div>
-  <div className="featured-card-copy"><div><h3>{project.title}</h3><p>{project.description}</p></div><div className="featured-detail-thumb"><Image src={project.detail} alt={`${project.title}, second study`} fill sizes="96px" style={{objectFit:'cover'}}/></div></div>
+  <div className="featured-card-copy"><div><h3>{project.title}</h3><p>{project.description}</p></div></div>
  </motion.button>;
 }

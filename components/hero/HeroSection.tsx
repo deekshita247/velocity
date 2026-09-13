@@ -22,14 +22,17 @@ export function HeroSection() {
       <DisintegrationCanvas track={ref}/>
       <motion.div className="hero-interface" style={{opacity,pointerEvents}}>
       <div className="velocity-light-streak" />
-      <nav className="velocity-nav"><a href="#">V /</a><span>MOTORSPORT / IMAGE MAKING</span><a href="#archive">SELECTED WORK &#8599;</a></nav>
+      <nav className="velocity-nav">
+        <span>MOTORSPORT / IMAGE MAKING</span>
+        <a href="#archive">ARCHIVE &#8599;</a>
+      </nav>
       <motion.div className="velocity-hero-title" style={{ y: reduced ? 0 : y, translateY: "-30%" }}>
-        <p className="velocity-kicker">SELECTED MOTORSPORT PHOTOGRAPHY</p>
+        <p className="velocity-kicker">CAPTURED AT SPEED</p>
         <motion.h1 initial={{ opacity: 0, scale: 0.94, letterSpacing: "-0.02em" }} animate={{ opacity: 1, scale: 1, letterSpacing: "-0.075em" }} whileHover={{ letterSpacing: "-0.055em", textShadow: "-2px 0 20px #5bf2e620, 2px 0 30px #955bfa22" }} transition={{ duration: reduced ? 0 : 1.4, ease: [0.16, 1, 0.3, 1] }}>VELOCITY</motion.h1>
         <div className="velocity-hero-meta"><span>FRAGMENTS OF A WORLD IN MOTION</span><span>DUBAI · AVAILABLE WORLDWIDE</span></div>
       </motion.div>
       <a className="velocity-explore" href="#spinal-gallery">SCROLL TO EXPLORE <span>&#8595;</span></a>
-      <span className="velocity-hero-edition">SELECTED WORK / 2026</span>
+      <span className="velocity-hero-edition">2026 / UAE / GLOBAL</span>
       </motion.div>
       </div>
     </section>

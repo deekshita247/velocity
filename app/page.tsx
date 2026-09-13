@@ -9,6 +9,7 @@ import { HomeScrollReset } from "@/components/racing/HomeScrollReset";
 import { SpinalGallery } from "@/components/gallery/SpinalGallery";
 import { AmbientRaceBackground } from "@/components/background/AmbientRaceBackground";
 import { SquareLensSection } from "@/components/lens/SquareLensSection";
+import { RaceCylinderCarousel } from "@/components/carousel/RaceCylinderCarousel";
 import { RaceSequence } from "@/components/sequence/RaceSequence";
 
 export default function Home() {
@@ -22,6 +23,7 @@ export default function Home() {
       <FeaturedProjects />
       <SquareLensSection />
       <RaceSequence />
+      <RaceCylinderCarousel />
     </main></>
   );
 }
