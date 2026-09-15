@@ -38,7 +38,9 @@ void main(){
  #include <colorspace_fragment>
 }`;
 export function EnvironmentScene({input,reduced}:{input:RefObject<FeaturedInput>;reduced:boolean}){
- const [base,night,normal]=useTexture(['/portfolio/c8.jpeg','/portfolio/c7.jpeg','/assets/reference/waternormals.jpg'],t=>{t[0].colorSpace=t[1].colorSpace=SRGBColorSpace;t[2].wrapS=t[2].wrapT=RepeatWrapping;});
+ const base=useTexture('/portfolio/c8.jpeg',t=>{t.colorSpace=SRGBColorSpace;});
+ const night=useTexture('/portfolio/c7.jpeg',t=>{t.colorSpace=SRGBColorSpace;});
+ const normal=useTexture('/assets/reference/waternormals.jpg',t=>{t.wrapS=t.wrapT=RepeatWrapping;});
  const material=useRef<ShaderMaterial>(null),object=useRef<Mesh>(null),particles=useRef<Group>(null);
  const uniforms=useMemo(()=>({uVelocity:{value:0},uSequence:{value:0},uBase:{value:base},uNight:{value:night},uNormal:{value:normal},uSize:{value:new Vector2(1,1)},uMouse:{value:new Vector2(.5,.5)},uTime:{value:0},uActive:{value:0},uScroll:{value:0},uHighlight:{value:0},uBaseAspect:{value:(base.image as HTMLImageElement).width/(base.image as HTMLImageElement).height},uNightAspect:{value:(night.image as HTMLImageElement).width/(night.image as HTMLImageElement).height}}),[base,night,normal]);
  useFrame(({clock,size},delta)=>{

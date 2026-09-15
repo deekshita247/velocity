@@ -2,7 +2,7 @@
 import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useReducedMotion } from "framer-motion";
 import gsap from "gsap";
-import { criticalPercent,getCriticalSnapshot,getServerCriticalSnapshot,markCriticalAsset,subscribeCriticalAssets } from "./criticalAssets";
+import { criticalPercent,getCriticalSnapshot,getServerCriticalSnapshot,subscribeCriticalAssets } from "./criticalAssets";
 let introCompleted=false;
 export function Preloader(){
  const [visible,setVisible]=useState(()=>!introCompleted),[exiting,setExiting]=useState(false),[timedOut,setTimedOut]=useState(false);
@@ -16,7 +16,7 @@ export function Preloader(){
   window.addEventListener('wheel',prevent,{passive:false});window.addEventListener('touchmove',prevent,{passive:false});window.addEventListener('keydown',key);
   return()=>{html.style.overflow=oldHtml;body.style.overflow=oldBody;if(main)main.inert=oldInert;window.removeEventListener('wheel',prevent);window.removeEventListener('touchmove',prevent);window.removeEventListener('keydown',key);};
  },[visible]);
- useEffect(()=>{if(!visible)return;let cancelled=false;const hero=new Image();hero.src='/portfolio/c13.jpeg';hero.decode().then(()=>{if(!cancelled)markCriticalAsset('hero');}).catch(()=>{});const timeout=window.setTimeout(()=>{if(criticalPercent(getCriticalSnapshot())===100)return;setTimedOut(true);setExiting(true);},8000);return()=>{cancelled=true;clearTimeout(timeout);};},[visible]);
+ useEffect(()=>{if(!visible)return;const timeout=window.setTimeout(()=>{if(criticalPercent(getCriticalSnapshot())===100)return;setTimedOut(true);setExiting(true);},8000);return()=>clearTimeout(timeout);},[visible]);
  useEffect(()=>{if(!visible)return;const value=display.current;const tween=gsap.to(value,{value:progress,duration:reduced?0:.35,ease:'power2.out',onUpdate:()=>{if(number.current)number.current.textContent=String(Math.round(value.value)).padStart(2,'0');if(line.current)line.current.style.transform=`scaleX(${value.value/100})`;},onComplete:()=>{if(progress===100)setExiting(true);}});return()=>{tween.kill();};},[progress,reduced,visible]);
  useEffect(()=>{if(!visible||!exiting)return;const context=gsap.context(()=>{gsap.set('.preloader-word',{animation:'none'});const tl=gsap.timeline({delay:.3,onComplete:()=>{window.scrollTo(0,0);introCompleted=true;setVisible(false);}});if(reduced)tl.to(root.current,{opacity:0,duration:.25});else tl.to('.preloader-word',{y:-25,letterSpacing:'.10em',opacity:0,duration:.65,ease:'power3.in'},0).to('.preloader-track',{scaleX:1.06,duration:.45},0).to(root.current,{clipPath:'inset(0 0 100% 0)',duration:1,ease:'power3.inOut'},.12);},root);return()=>context.revert();},[exiting,reduced,visible]);
  if(!visible)return null;

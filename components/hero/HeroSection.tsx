@@ -3,6 +3,7 @@
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import Image from "next/image";
+import { markCriticalAsset } from "../loading/criticalAssets";
 import { DisintegrationCanvas } from "./DisintegrationCanvas";
 
 export function HeroSection() {
@@ -16,7 +17,7 @@ export function HeroSection() {
     <section ref={ref} id="hero-transition" className="hero-disintegrate-section" aria-label="Velocity photography">
       <div className="hero-sticky velocity-hero">
       <div className="velocity-hero-photo">
-        <Image src="/portfolio/c13.jpeg" alt="Purple endurance race car on circuit" fill priority sizes="100vw" style={{ objectFit: "cover", objectPosition: "center 55%" }} />
+        <Image src="/portfolio/c13.jpeg" alt="Purple endurance race car on circuit" fill unoptimized preload crossOrigin="anonymous" onLoad={()=>markCriticalAsset("hero")} sizes="100vw" style={{ objectFit: "cover", objectPosition: "center 55%" }} />
       </div>
       <div className="velocity-hero-shade" />
       <DisintegrationCanvas track={ref}/>
@@ -26,7 +27,7 @@ export function HeroSection() {
         <span>MOTORSPORT / IMAGE MAKING</span>
         <a href="#archive" data-cursor="view">ARCHIVE &#8599;</a>
         <motion.div className="hero-logo" initial={{opacity:0,y:-8}} animate={{opacity:1,y:0}} transition={{duration:reduced?0:1,ease:[.16,1,.3,1]}}>
-          <Image src="/portfolio/logo.png" alt="Velocity logo" fill sizes="(max-width:767px) 60px, 90px" unoptimized priority style={{objectFit:"contain"}} onError={e=>{e.currentTarget.style.visibility="hidden";}} />
+          <Image src="/portfolio/logo.png" alt="Velocity logo" fill sizes="(max-width:767px) 60px, 90px" unoptimized preload onLoad={()=>markCriticalAsset("logo")} style={{objectFit:"contain"}} onError={e=>{e.currentTarget.style.visibility="hidden";}} />
         </motion.div>
       </nav>
       <motion.div className="velocity-hero-title" style={{ y: reduced ? 0 : y, translateY: "-30%" }}>

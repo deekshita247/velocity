@@ -1,8 +1,10 @@
 ﻿"use client";
 import { Canvas } from "@react-three/fiber";
 import { ScrollControls } from "@react-three/drei";
-import { Component, Suspense, useEffect, useRef, useState, type ReactNode } from "react";
-import { AnimatePresence, motion, useInView, useMotionValue, useScroll } from "framer-motion";
+import { Component, Suspense, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
+import { AnimatePresence, motion, useMotionValue, useScroll } from "framer-motion";
+import { usePageVisible } from "../performance/deviceState";
+import { subscribeCriticalAssets, getCriticalSnapshot, getServerCriticalSnapshot, criticalPercent } from "../loading/criticalAssets";
 import { GalleryScene } from "./GalleryScene";
 import { createGalleryPath, getActivePhoto, getGalleryProgress, photographs } from "./galleryData";
 import { GalleryInteraction, useGalleryInteraction } from "./GalleryInteraction";
@@ -13,23 +15,26 @@ class GalleryBoundary extends Component<{children:ReactNode},{failed:boolean}>{
 }
 function GalleryChapter(){
  const track=useRef<HTMLElement>(null);const closeButton=useRef<HTMLButtonElement>(null);const openButton=useRef<HTMLButtonElement>(null);
- const hadDetail=useRef(false);const scrollState=useRef({fixed:false,active:0});
+ const hadDetail=useRef(false);const scrollState=useRef({fixed:false,active:0,rendering:false});
  const [mobile,setMobile]=useState(false);const [active,setActive]=useState(0);
+ const [rendering,setRendering]=useState(false),[warming,setWarming]=useState(true);
+ useEffect(()=>{const timer=setTimeout(()=>setWarming(false),8000);return()=>clearTimeout(timer);},[]);const pageVisible=usePageVisible();
+ const criticalSnapshot=useSyncExternalStore(subscribeCriticalAssets,getCriticalSnapshot,getServerCriticalSnapshot);
  const inputEvents=useMotionValue<"auto"|"none">("none");
  const chrome=useMotionValue<"visible"|"hidden">("hidden");
  const opacity=useMotionValue(1);const {selected,phase,locked,open,close}=useGalleryInteraction();
  useEffect(()=>{const query=matchMedia('(max-width: 767px)');const update=()=>setMobile(query.matches);update();query.addEventListener('change',update);return()=>query.removeEventListener('change',update);},[]);
  useEffect(()=>{
-  const update=()=>{if(!track.current||locked.current)return;const rect=track.current.getBoundingClientRect();chrome.set(rect.top<=0&&rect.bottom>=innerHeight?"visible":"hidden");inputEvents.set(rect.top<=0&&rect.bottom>=innerHeight?"auto":"none");const nextFixed=rect.top<=0&&rect.bottom>-innerHeight;if(nextFixed!==scrollState.current.fixed){scrollState.current.fixed=nextFixed;}const hero=document.getElementById("hero-transition");const heroRect=hero?.getBoundingClientRect();const entrance=heroRect?Math.max(0,Math.min(1,(-heroRect.top/Math.max(1,heroRect.height-innerHeight)-.15)/.45)):Math.max(0,Math.min(1,(innerHeight-rect.top)/(innerHeight*.8)));opacity.set(entrance*Math.max(0,Math.min(1,(1-(-rect.top/Math.max(1,rect.height-innerHeight)))/0.10)));const nextActive=getActivePhoto(getGalleryProgress(-rect.top/Math.max(1,rect.height-innerHeight)));if(nextActive!==scrollState.current.active){scrollState.current.active=nextActive;setActive(nextActive);}};
+  const update=()=>{if(!track.current||locked.current)return;const rect=track.current.getBoundingClientRect();chrome.set(rect.top<=0&&rect.bottom>=innerHeight?"visible":"hidden");inputEvents.set(rect.top<=0&&rect.bottom>=innerHeight?"auto":"none");const nextFixed=rect.top<=0&&rect.bottom>-innerHeight;if(nextFixed!==scrollState.current.fixed){scrollState.current.fixed=nextFixed;}const hero=document.getElementById("hero-transition");const heroRect=hero?.getBoundingClientRect();const entrance=heroRect?Math.max(0,Math.min(1,(-heroRect.top/Math.max(1,heroRect.height-innerHeight)-.15)/.45)):Math.max(0,Math.min(1,(innerHeight-rect.top)/(innerHeight*.8)));const strength=entrance*Math.max(0,Math.min(1,(1-(-rect.top/Math.max(1,rect.height-innerHeight)))/0.10));opacity.set(strength);const nextRendering=strength>0&&rect.bottom>0;if(nextRendering!==scrollState.current.rendering){scrollState.current.rendering=nextRendering;setRendering(nextRendering);}const nextActive=getActivePhoto(getGalleryProgress(-rect.top/Math.max(1,rect.height-innerHeight)));if(nextActive!==scrollState.current.active){scrollState.current.active=nextActive;setActive(nextActive);}};
   update();window.addEventListener('scroll',update,{passive:true});window.addEventListener('resize',update);return()=>{window.removeEventListener('scroll',update);window.removeEventListener('resize',update);};
  },[locked,opacity,inputEvents,chrome]);
  useEffect(()=>{if(selected!==null){hadDetail.current=true;closeButton.current?.focus({preventScroll:true});}else if(phase==='closed'&&hadDetail.current){hadDetail.current=false;openButton.current?.focus({preventScroll:true});}},[selected,phase]);
- const nearby=useInView(track,{margin:'0px 0px 2500px 0px'});
+
  const {scrollYProgress}=useScroll({target:track,offset:['start start','end end']});
  const photo=selected===null?photographs[active]:photographs[selected];
  return <section ref={track} id="spinal-gallery" className="velocity-gallery" aria-label="Immersive spinal photography gallery">
   <motion.div className="velocity-gallery-stage" style={{position:'fixed',top:0,opacity,pointerEvents:inputEvents}}>
-   <GalleryBoundary><Canvas dpr={mobile?1:[1,1.5]} frameloop={nearby?'always':'never'} camera={{position:createGalleryPath(mobile).getPointAt(0).toArray(),fov:mobile?68:52,near:0.1,far:65}} gl={{antialias:false,alpha:false,powerPreference:'high-performance'}} fallback={<div className="velocity-gallery-fallback">3D is unavailable. Explore the photographic index below.</div>}>
+   <GalleryBoundary><Canvas dpr={mobile?1:[1,1.5]} frameloop={pageVisible&&(rendering||(warming&&criticalPercent(criticalSnapshot)<100))?'always':'never'} camera={{position:createGalleryPath(mobile).getPointAt(0).toArray(),fov:mobile?68:52,near:0.1,far:65}} gl={{antialias:false,alpha:false,powerPreference:'high-performance'}} fallback={<div className="velocity-gallery-fallback">3D is unavailable. Explore the photographic index below.</div>}>
     <Suspense fallback={null}><ScrollControls enabled={false} pages={6} damping={mobile?0.2:0.15} style={{overflowY:'hidden',touchAction:'pan-y'}}><GalleryScene track={track}/></ScrollControls></Suspense>
    </Canvas></GalleryBoundary>
    <div className="velocity-gallery-vignette"/>

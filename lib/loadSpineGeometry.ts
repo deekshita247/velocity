@@ -7,8 +7,19 @@ export interface SpineMetadata {
   attributes?: Array<[string, number]>;
 }
 
+// Cache the decoded source; each mounted mesh owns a clone it may safely dispose.
+const decodedSources = new Map<string, Promise<THREE.BufferGeometry>>();
 export async function loadSpineGeometry(url: string): Promise<THREE.BufferGeometry> {
-  const response = await fetch(url, { cache: "no-store" });
+  let source = decodedSources.get(url);
+  if (!source) {
+    source = decodeSpineGeometry(url).catch(error => { decodedSources.delete(url); throw error; });
+    decodedSources.set(url, source);
+  }
+  return (await source).clone();
+}
+
+async function decodeSpineGeometry(url: string): Promise<THREE.BufferGeometry> {
+  const response = await fetch(url);
 
   if (!response.ok) {
     throw new Error(`Failed to fetch spine asset: ${response.status} ${response.statusText} (${url})`);
@@ -85,5 +96,7 @@ export async function loadSpineGeometry(url: string): Promise<THREE.BufferGeomet
     throw new Error(
       `DRACOLoader decode failed. markerIndex=${markerIndex}, payloadBytes=${dracoPayload.byteLength}, metadataText=${metadataText}, preview=${preview}. Error: ${error instanceof Error ? error.message : String(error)}`,
     );
+  } finally {
+    dracoLoader.dispose();
   }
 }

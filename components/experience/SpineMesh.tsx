@@ -25,7 +25,7 @@ export function SpineMesh() {
     async function load() {
       try {
         const decoded = await loadSpineGeometry("/assets/spine/spine.bin");
-        if (!cancelled) { setGeometry(decoded); markCriticalAsset("spine"); }
+        if (!cancelled) { setGeometry(decoded); markCriticalAsset("spine"); } else decoded.dispose();
       } catch (err) {
         if (!cancelled) setError(err instanceof Error ? err.message : String(err));
       }
@@ -75,6 +75,9 @@ export function SpineMesh() {
       }),
     [],
   );
+
+  useEffect(() => () => material.dispose(), [material]);
+  useEffect(() => () => geometry?.dispose(), [geometry]);
 
   if (error) return null;
   if (!geometry) return null;

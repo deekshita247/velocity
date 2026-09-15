@@ -13,7 +13,7 @@ export function DisintegrationCanvas({ track }: { track: RefObject<HTMLElement |
   const root=host.current,section=track.current;if(!root||!section)return;
   let disposed=false,frame=0,timer=0,generation=0;
   let context:gsap.Context|undefined;
-  const photo=new Image();photo.src="/portfolio/c13.jpeg";
+  const photo=new Image();photo.crossOrigin="anonymous";photo.src="/portfolio/c13.jpeg";
   const clear=()=>{context?.revert();context=undefined;root.replaceChildren();section.removeAttribute('data-fragments-ready');};
   const build=async()=>{
    const version=++generation;cancelAnimationFrame(frame);clear();

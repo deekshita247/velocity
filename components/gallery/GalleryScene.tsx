@@ -1,10 +1,11 @@
 "use client";
 
-import { Suspense, useEffect, useRef, type RefObject } from "react";
+import { Suspense, useEffect, useRef, useSyncExternalStore, type RefObject } from "react";
 import { Environment, Lightformer, Sparkles, useScroll, useTexture } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Group, MathUtils, Mesh, MeshBasicMaterial, Vector3 } from "three";
-import { criticalDownloadsReady, markCriticalAsset } from "../loading/criticalAssets";
+import { useInView } from "framer-motion";
+import { subscribeCriticalAssets, getCriticalSnapshot, getServerCriticalSnapshot, criticalPercent } from "../loading/criticalAssets";
 import { SpineMesh } from "@/components/experience/SpineMesh";
 import { CameraRig } from "./CameraRig";
 import { PhotoCard } from "./PhotoCard";
@@ -51,12 +52,6 @@ function PageScrollBridge({ track }: { track: RefObject<HTMLElement | null> }) {
   return null;
 }
 
-function InitialSceneReady(){
-  const frames=useRef(0);
-  useFrame(()=>{if(frames.current>=3)return;if(criticalDownloadsReady()){frames.current++;if(frames.current===3)markCriticalAsset('scene');}});
-  return null;
-}
-
 function RotatingSpine() {
   const { locked } = useGalleryInteraction();
   const group = useRef<Group>(null);
@@ -86,8 +81,11 @@ function DetailBackdrop() {
 
 export function GalleryScene({ track }: { track: RefObject<HTMLElement | null> }) {
   const mobile = useThree((state) => state.size.width < 768);
+  const snapshot=useSyncExternalStore(subscribeCriticalAssets,getCriticalSnapshot,getServerCriticalSnapshot);
+  const approaching=useInView(track,{once:true,margin:"800px"});
+  const loadRemaining=criticalPercent(snapshot)===100||approaching;
   useEffect(() => {
-    photographs.forEach((photo) => {
+    photographs.slice(0,2).forEach((photo) => {
       try {
         useTexture.preload(photo.galleryImage);
       } catch (error) {
@@ -99,7 +97,7 @@ export function GalleryScene({ track }: { track: RefObject<HTMLElement | null> }
   return (
     <GalleryAtmosphere>
       <PageScrollBridge track={track} />
-      <InitialSceneReady/>
+
       <CameraRig />
       <color attach="background" args={["#080B12"]} />
       <fogExp2 attach="fog" args={["#080B12", 0.08]} />
@@ -118,7 +116,7 @@ export function GalleryScene({ track }: { track: RefObject<HTMLElement | null> }
       </Environment>
       <Sparkles count={mobile ? 80 : 170} position={[0, -4, 0]} scale={[18, 18, 18]} size={1.2} speed={0.28} noise={0.6} opacity={0.35} color="#5BF2E6" />
       <Sparkles count={mobile ? 60 : 120} position={[0, -2.5, 0]} scale={[16, 16, 16]} size={0.8} speed={0.18} noise={0.45} opacity={0.25} color="#E560D1" />
-      {photographs.map((photo, index) => (
+      {photographs.slice(0,loadRemaining?photographs.length:2).map((photo, index) => (
         <Suspense key={photo.title} fallback={null}>
           <PhotoCard photo={photo} index={index} />
         </Suspense>
