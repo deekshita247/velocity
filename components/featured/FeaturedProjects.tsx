@@ -26,8 +26,8 @@ export function FeaturedProjects(){
    <footer className="featured-end race-meta"><span>VELOCITY / FIELD NOTES</span><span>FORM. PRESSURE. LIGHT.</span></footer>
   </div>
   <dialog ref={dialog} className="featured-dialog" onClose={()=>setSelected(null)} onClick={e=>{if(e.target===e.currentTarget)dialog.current?.close()}} aria-label={selected===null?'Project photographs':projects[selected].title}>
-   <button className="featured-dialog-close" onClick={()=>dialog.current?.close()}>CLOSE ×</button>
-   {selected!==null&&<><h2>{projects[selected].title}</h2><div className="featured-dialog-images"><Image src={projects[selected].image} alt={projects[selected].title} width={1400} height={933} sizes="(max-width:767px) 86vw, 76vw" style={{width:"100%",height:"auto",objectFit:"cover"}}/></div><p>{projects[selected].description}</p></>}
+   <button className="featured-dialog-close" data-cursor="close" onClick={()=>dialog.current?.close()}>CLOSE ×</button>
+   {selected!==null&&<><h2>{projects[selected].title}</h2><div className="featured-dialog-images"><Image src={projects[selected].image} alt={projects[selected].title} width={1400} height={933} sizes="88vw" style={{width:"100%",height:"100%",objectFit:"contain"}}/></div><p>{projects[selected].description}</p></>}
   </dialog>
  </section>;
 }

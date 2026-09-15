@@ -38,7 +38,7 @@ function GalleryChapter(){
     {selected===null?<motion.div key="browse" style={{visibility:chrome}} className="velocity-gallery-bottom" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}>
       <button ref={openButton} className="velocity-open-photo chromatic-text" onClick={()=>open(active)} aria-label={`Open ${photo.name}`}>{photo.title} / EXPLORE IMAGE &#8599;</button><a href="#archive">VIEW THE INDEX &#8599;</a>
     </motion.div>:<motion.div key="detail" className="velocity-detail-ui" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}>
-      <button ref={closeButton} className="velocity-detail-close chromatic-text" onClick={close} aria-label="Close photograph">CLOSE &#215;</button>
+      <button ref={closeButton} className="velocity-detail-close chromatic-text" data-cursor="close" onClick={close} aria-label="Close photograph">CLOSE &#215;</button>
       <div className="velocity-detail-caption" aria-live="polite"><span className="chromatic-text">{photo.name}</span><span>{photo.title} / MACHINE / MOTION / LIGHT</span></div>
     </motion.div>}
    </AnimatePresence>

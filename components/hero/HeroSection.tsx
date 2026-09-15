@@ -24,7 +24,10 @@ export function HeroSection() {
       <div className="velocity-light-streak" />
       <nav className="velocity-nav">
         <span>MOTORSPORT / IMAGE MAKING</span>
-        <a href="#archive">ARCHIVE &#8599;</a>
+        <a href="#archive" data-cursor="view">ARCHIVE &#8599;</a>
+        <motion.div className="hero-logo" initial={{opacity:0,y:-8}} animate={{opacity:1,y:0}} transition={{duration:reduced?0:1,ease:[.16,1,.3,1]}}>
+          <Image src="/portfolio/logo.png" alt="Velocity logo" fill sizes="(max-width:767px) 60px, 90px" unoptimized priority style={{objectFit:"contain"}} onError={e=>{e.currentTarget.style.visibility="hidden";}} />
+        </motion.div>
       </nav>
       <motion.div className="velocity-hero-title" style={{ y: reduced ? 0 : y, translateY: "-30%" }}>
         <p className="velocity-kicker">CAPTURED AT SPEED</p>

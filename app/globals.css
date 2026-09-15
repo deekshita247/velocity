@@ -780,12 +780,14 @@ html, body, .velocity-page { background: var(--void); color: var(--starlight); }
 .featured-card-4:hover .featured-rgb.red { transform: translateX(-5px) scale(1.015); }
 .featured-card-4:hover .featured-rgb.cyan { transform: translateX(5px) scale(1.015); }
 .featured-end { margin-top: 110px; padding-top: 25px; border-top: 1px solid #91b2bd26; display: flex; justify-content: space-between; color: #91a8b3; }
-.featured-dialog { position: fixed; margin: auto; width: min(1400px,80vw); max-height: 92svh; overflow-y: auto; padding: 60px 28px 24px; color: #E0EBF5; background: #080B12; border: 1px solid #5bf2e640; }
+.featured-dialog { position: fixed; inset: 0; margin: 0; width: 100vw; max-width: none; height: 100vh; height: 100dvh; max-height: none; overflow: hidden; padding: clamp(14px,3vh,32px) 6vw; color: #E0EBF5; background: #080B12; border: 1px solid #5bf2e640; }
 .featured-dialog::backdrop { background: #080b12ed; }
-.featured-dialog h2 { font-size: 23px; letter-spacing: .06em; margin-bottom: 22px; }
-.featured-dialog p { font-size: 13px; margin-top: 24px; color: #a0b4be; }
-.featured-dialog-close { position: absolute; top: 20px; right: 25px; font-size: 11px; letter-spacing: .15em; cursor: pointer; }
-.featured-dialog-images { width: 100%; }
+.featured-dialog[open] { display: grid; grid-template-rows: auto minmax(0,1fr) auto; gap: clamp(10px,2vh,22px); }
+body:has(.featured-dialog[open]) { overflow: hidden; }
+.featured-dialog h2 { font-size: clamp(17px,2.5vw,23px); letter-spacing: .06em; margin: 0; padding-right: 90px; align-self: center; min-height: 44px; display: flex; align-items: center; }
+.featured-dialog p { font-size: clamp(11px,1.6vh,13px); margin: 0; color: #a0b4be; }
+.featured-dialog-close { position: absolute; top: clamp(14px,3vh,32px); right: 6vw; z-index: 2; min-height: 44px; font-size: 11px; letter-spacing: .15em; cursor: pointer; }
+.featured-dialog-images { width: 100%; max-width: 88vw; height: 100%; max-height: 72dvh; min-height: 0; align-self: center; }
 .featured-dialog-images > img { display: block; }
 @keyframes featured-arrive { from {opacity: 0;} to {opacity: 1;} }
 @media(max-width:767px) {
@@ -796,7 +798,7 @@ html, body, .velocity-page { background: var(--void); color: var(--starlight); }
  .featured-card:nth-child(even) { margin-top: 0; }
  .featured-card-media { height: 105vw; max-height: 560px; }
  .featured-end { gap: 25px; font-size: 8px; }
- .featured-dialog { width: 94vw; }
+ .featured-dialog { width: 100vw; }
 }
 @media(prefers-reduced-motion:reduce) {
  .featured-card,.featured-main-image,.featured-rgb,.featured-view i { transition: none; }
@@ -835,9 +837,9 @@ body:has(.velocity-preloader) main { pointer-events: none; }
 .cylinder-heading h2 { font-size: clamp(42px,5.5vw,90px); line-height: .95; letter-spacing: -.045em; margin: 28px 0 22px; }
 .cylinder-heading h2 em { font-style: normal; color: #a8dedb; }
 .cylinder-heading > p { color: #9eafb9; font-size: 13px; }
-.cylinder-stage { position: relative; height: max(850px,100svh); margin-top: 65px; overflow: clip; perspective: 1350px; perspective-origin: 50% 50%; transform-style: preserve-3d; touch-action: auto; user-select: none; cursor: grab; }
+.cylinder-stage { position: relative; height: 82svh; margin-top: 65px; overflow: clip; perspective: 1350px; perspective-origin: 50% 50%; transform-style: preserve-3d; touch-action: auto; user-select: none; cursor: grab; }
 .cylinder-stage:active { cursor: grabbing; }
-.race-cylinder-panel { touch-action: pan-x pinch-zoom; position: absolute; left: 50%; top: 50%; width: clamp(480px,38vw,680px); height: auto; aspect-ratio: 3/2; transform: translate(-50%,-50%) translateZ(400px); border: 1px solid #9cc9d435; border-radius: 7px; overflow: hidden; background: #182A3A; box-shadow: 0 15px 40px #080b1266,0 0 20px #5bf2e60b; backface-visibility: hidden; cursor: pointer; will-change: transform,opacity; }
+.race-cylinder-panel { touch-action: pan-x pinch-zoom; position: absolute; left: 50%; top: 50%; width: min(clamp(340px,25vw,460px), 60svh); height: auto; aspect-ratio: 3/2; transform: translate(-50%,-50%) translateZ(0px); border: 1px solid #9cc9d435; border-radius: 7px; overflow: hidden; background: #182A3A; box-shadow: 0 15px 40px #080b1266,0 0 20px #5bf2e60b; backface-visibility: hidden; cursor: pointer; will-change: transform,opacity; }
 .race-cylinder-panel[data-front="false"] { opacity: 0; }
 .race-cylinder-panel[data-front="true"] { border-color: #a7dad85c; box-shadow: 0 18px 50px #080b1277,0 0 22px #955bfa12; }
 .cylinder-panel-caption { position: absolute; inset: auto 0 0; display: flex; align-items: end; gap: 18px; padding: 35px 20px 16px; background: linear-gradient(transparent,#080b12b3); text-align: left; pointer-events: none; }
@@ -853,8 +855,33 @@ body:has(.velocity-preloader) main { pointer-events: none; }
 .cylinder-hint { margin-top: 24px; font-size: 9px; letter-spacing: .15em; color: #8099a5; }
 @media(max-width:767px) {
  .race-cylinder { padding-top: 70px; }
- .cylinder-stage { height: max(620px,85svh); margin-top: 45px; perspective: 1350px; }
- .race-cylinder-panel { width: min(82vw,420px); height: auto; aspect-ratio: 3/2; transform: translate(-50%,-50%) translateZ(104px); }
+ .cylinder-stage { height: 82svh; margin-top: 45px; perspective: 1350px; }
+ .race-cylinder-panel { width: min(82vw,340px,60svh); height: auto; aspect-ratio: 3/2; transform: translate(-50%,-50%) translateZ(0px); }
  .cylinder-panel-caption { padding: 30px 12px 12px; gap: 12px; }
  .cylinder-panel-caption > span { font-size: 10px; }
 }
+
+/* Focused interaction polish. */
+.hero-logo { position: absolute; top: 28px; right: 4vw; z-index: 5; width: 90px; height: 64px; }
+.velocity-nav { grid-template-columns: 1fr 1fr auto; align-items: center; padding-right: calc(4vw + 114px); }
+.velocity-page a { text-decoration-color: #5bf2e6; text-underline-offset: 6px; }
+.velocity-nav a, .velocity-explore { background-image: linear-gradient(#5bf2e6,#5bf2e6); background-size: 0 1px; background-position: left bottom; background-repeat: no-repeat; transition: background-size .5s cubic-bezier(.16,1,.3,1), color .5s cubic-bezier(.16,1,.3,1); }
+.velocity-nav a:hover, .velocity-explore:hover { background-size: 100% 1px; }
+.cylinder-controls button, .sequence-controls button, .featured-dialog-close { transition: border-color .45s cubic-bezier(.16,1,.3,1), background-color .45s cubic-bezier(.16,1,.3,1), box-shadow .45s cubic-bezier(.16,1,.3,1); }
+.cylinder-controls button:hover, .sequence-controls button:hover, .featured-dialog-close:hover { box-shadow: 0 0 16px #5bf2e612; }
+.enhanced-cursor { position: fixed; inset: 0; z-index: 2147483647; pointer-events: none; opacity: 0; }
+.cursor-dot, .cursor-ring { position: absolute; left: 0; top: 0; pointer-events: none; will-change: transform; border-radius: 50%; }
+.cursor-dot { width: 4px; height: 4px; margin: -2px; background: #5bf2e6; }
+.cursor-ring { width: 32px; height: 32px; margin: -16px; border: 1px solid #955bfa99; display: grid; place-items: center; color: transparent; font: 8px var(--font-geist-mono), monospace; letter-spacing: .06em; transition: width .45s cubic-bezier(.16,1,.3,1), height .45s cubic-bezier(.16,1,.3,1), margin .45s cubic-bezier(.16,1,.3,1), border-color .45s, color .45s, background-color .45s; }
+.enhanced-cursor[data-active="true"] .cursor-ring { width: 58px; height: 58px; margin: -29px; border-color: #5bf2e6b3; color: #5bf2e6; background: #955bfa0a; }
+.enhanced-cursor[data-active="true"] .cursor-dot { background: #e560d1; opacity: .45; }
+@media (hover: hover) and (pointer: fine) { html.cursor-enabled, html.cursor-enabled * { cursor: none !important; } }
+@media (max-width: 767px) { .hero-logo { top: 20px; right: 5vw; width: 60px; height: 46px; } .velocity-nav { padding-right: calc(5vw + 80px); } }
+@media (prefers-reduced-motion: reduce) { .cursor-ring { transition: none; } }
+.cylinder-label { display: inline-block; }
+
+.enhanced-cursor[data-dragging="true"] .cursor-ring { width: 46px; height: 46px; margin: -23px; border-color: #5bf2e6; background: #955bfa18; box-shadow: 0 0 12px #5bf2e61a; }
+
+/* Keep reel input local without changing the visual stage or card placement. */
+.cylinder-stage { pointer-events: none; }
+.race-cylinder-interaction { position: relative; width: min(520px,90vw); height: 100%; margin: 0 auto; transform-style: preserve-3d; pointer-events: auto; }
