@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "VELOCITY — Motorsport Photography",
+  title: "VELOCITY",
   description: "Selected motorsport photography. Speed, precision and light. UAE / Global.",
 };
 
